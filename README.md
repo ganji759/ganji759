@@ -56,5 +56,29 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
 
 ### 🔧 Engineering & CAD Tools
 <p align="center">
-<a href="https://www.mathworks.com/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png" alt="matlab" width="45" height="45"/></a>
-<a href="https://www.ansys.com/" target="_blank
+  <a href="https://www.mathworks.com/" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png" alt="MATLAB" width="45" height="45"/>
+  </a>
+  <a href="https://www.solidworks.com/" target="_blank">
+    <img src="https://www.svgrepo.com/show/305927/solidworks.svg" alt="SolidWorks" width="45" height="45"/>
+  </a>
+  <a href="https://www.freecad.org/" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/FreeCAD_logo.svg" alt="FreeCAD" width="45" height="45"/>
+  </a>
+  <a href="https://www.autodesk.com/products/autocad/" target="_blank">
+    <img src="https://www.svgrepo.com/show/373441/autocad.svg" alt="AutoCAD" width="45" height="45"/>
+  </a>
+  <a href="https://www.autodesk.com/products/inventor/" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Autodesk_Inventor_Logo.svg" alt="Autodesk Inventor" width="45" height="45"/>
+  </a>
+  <a href="https://openfoam.org/" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/OpenFOAM_logo.svg" alt="OpenFOAM" width="45" height="45"/>
+  </a>
+  <a href="https://www.comsol.com/" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4d/COMSOL_logo.svg" alt="COMSOL Multiphysics" width="45" height="45"/>
+  </a>
+  <a href="https://www.arduino.cc/" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Arduino_Logo.svg" alt="Arduino" width="45" height="45"/>
+  </a>
+</p>
+
