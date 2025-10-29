@@ -8,7 +8,6 @@
 
 I'm a Mechanical Engineering student passionate about bridging the gap between traditional engineering and cutting-edge AI/ML technologies. My focus is on applying Machine Learning and Deep Learning to solve real-world engineering problems in robotics, autonomous systems, and smart manufacturing.
 
-- 🎓 &nbsp; Mechanical Engineering Student at **University of Johannesburg (UJ)**
 - 🔬 &nbsp; Research focus: **Machine Learning, Deep Learning & Computer Vision**
 - 🤖 &nbsp; Interested in: **Robotics, Autonomous Systems, Predictive Maintenance, Digital Twins**
 - 🌱 &nbsp; Currently learning: **PyTorch, TensorFlow, Reinforcement Learning & ROS**
@@ -23,13 +22,15 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
       <td width="20"></td>
       <td><a href="https://www.w3schools.com/cpp/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/cplusplus/cplusplus-original.svg" alt="cplusplus" width="45" height="45"/></a></td>
       <td width="20"></td>
-      <td><a href="https://www.python.org" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="45" height="45"/></a></td>
-      <td width="20"></td>
-      <td><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="45" height="45"/></a></td>
-      <td width="20"></td>
-      <td><a href="https://www.linux.org/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg" alt="linux" width="45" height="45"/></a></td>
+      <td><a href="https://www.python.org" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="45" height="45"/></a></td> 
       <td width="20"></td>
       <td><a href="https://git-scm.com/" target="_blank" rel="noreferrer"><img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="45" height="45"/></a></td>
+      <td width="20"></td>
+      <td><a href="https://pytorch.org/" target="_blank"><img src="https://www.vectorlogo.zone/logos/pytorch/pytorch-icon.svg" alt="pytorch" width="45" height="45"/></a></td>
+      <td width="20"></td>
+      <td> <a href="https://www.tensorflow.org" target="_blank"><img src="https://www.vectorlogo.zone/logos/tensorflow/tensorflow-icon.svg" alt="tensorflow" width="45" height="45"/></a></td>
+      <td width="20"></td>
+      <td> <a href="https://scikit-learn.org/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg" alt="scikit_learn" width="45" height="45"/></a></td>
     </tr>
     <tr>
       <td height="20" colspan="11"></td>
@@ -39,23 +40,15 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
       <td width="20"></td>
       <td><a href="https://www.mathworks.com/" target="_blank" rel="noreferrer"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/matlab/matlab-original.svg" alt="matlab" width="45" height="45"/></a></td>
       <td width="20"></td>
-      <td><a href="https://www.st.com/en/development-tools/stm32cubeide.html" target="_blank" rel="noreferrer"><img src="https://github.com/user-attachments/assets/1a5bcb90-e9d8-4697-b59a-dc613de5e754" alt="stm32" width="45" height="45"/></a></td>
-      <td width="20"></td>
       <td><a href="https://www.raspberrypi.org/" target="_blank" rel="noreferrer"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/raspberrypi/raspberrypi-original.svg" alt="raspberrypi" width="45" height="45"/></a></td>
-      <td width="20"></td>
-      <td><a href="https://www.yoctoproject.org/" target="_blank" rel="noreferrer"><img src="https://github.com/user-attachments/assets/bfc63e2e-114e-42c4-a627-910b28441390" alt="yocto" width="45" height="45"/></a></td>
-      <td width="20"></td>
-      <td><a href="https://www.freertos.org/" target="_blank" rel="noreferrer"><img src="https://github.com/user-attachments/assets/53a63563-9a28-47ee-96ef-357f136d857c" alt="freertos" width="45" height="45"/></a></td>
     </tr>
+    
   </table>
 </div>
 
 ### 💻 Programming & ML/DL
 <p align="center">
-<a href="https://www.python.org" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="45" height="45"/></a>
-<a href="https://pytorch.org/" target="_blank"><img src="https://www.vectorlogo.zone/logos/pytorch/pytorch-icon.svg" alt="pytorch" width="45" height="45"/></a>
-<a href="https://www.tensorflow.org" target="_blank"><img src="https://www.vectorlogo.zone/logos/tensorflow/tensorflow-icon.svg" alt="tensorflow" width="45" height="45"/></a>
-<a href="https://scikit-learn.org/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg" alt="scikit_learn" width="45" height="45"/></a>
+
 <a href="https://opencv.org/" target="_blank"><img src="https://www.vectorlogo.zone/logos/opencv/opencv-icon.svg" alt="opencv" width="45" height="45"/></a>
 <a href="https://pandas.pydata.org/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/2ae2a900d2f041da66e950e4d48052658d850630/icons/pandas/pandas-original.svg" alt="pandas" width="45" height="45"/></a>
 <a href="https://seaborn.pydata.org/" target="_blank"><img src="https://seaborn.pydata.org/_images/logo-mark-lightbg.svg" alt="seaborn" width="45" height="45"/></a>
@@ -63,9 +56,6 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
 
 ### 🔧 Engineering & CAD Tools
 <p align="center">
-  <a href="https://www.mathworks.com/" target="_blank">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png" alt="MATLAB" width="45" height="45"/>
-  </a>
   <a href="https://www.solidworks.com/" target="_blank">
     <img src="https://www.svgrepo.com/show/305927/solidworks.svg" alt="SolidWorks" width="45" height="45"/>
   </a>
@@ -92,17 +82,8 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
 🗄️ Databases & Cloud
 <p align="center">
 <a href="https://www.mysql.com/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original-wordmark.svg" alt="mysql" width="45" height="45"/></a>
-<a href="https://www.mongodb.com/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original-wordmark.svg" alt="mongodb" width="45" height="45"/></a>
 <a href="https://aws.amazon.com" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="aws" width="45" height="45"/></a>
 <a href="https://cloud.google.com" target="_blank"><img src="https://www.vectorlogo.zone/logos/google_cloud/google_cloud-icon.svg" alt="gcp" width="45" height="45"/></a>
-</p>
-
-🔨 DevOps & Tools
-<p align="center">
-<a href="https://git-scm.com/" target="_blank"><img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="45" height="45"/></a>
-<a href="https://www.docker.com/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg" alt="docker" width="45" height="45"/></a>
-<a href="https://www.linux.org/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg" alt="linux" width="45" height="45"/></a>
-<a href="https://jupyter.org/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/jupyter/jupyter-original-wordmark.svg" alt="jupyter" width="45" height="45"/></a>
 </p>
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"><br><br>
@@ -150,7 +131,7 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
 </div>
 
 <div align="center">
-  <h3>🚀 Thanks for visiting my profile!</h3>
+  <h3>🚀 Thanks for visiting my profile </h3>
   <p><em> Feel free to reach out if you'd like to collaborate on exciting projects ;) </em></p>
   <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=100&section=footer&text=&fontSize=42&fontColor=fff&animation=twinkling" width="100%"/>
 </div>
