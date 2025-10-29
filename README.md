@@ -82,3 +82,64 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
   </a>
 </p>
 
+🗄️ Databases & Cloud
+<p align="center">
+<a href="https://www.mysql.com/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original-wordmark.svg" alt="mysql" width="45" height="45"/></a>
+<a href="https://www.mongodb.com/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original-wordmark.svg" alt="mongodb" width="45" height="45"/></a>
+<a href="https://aws.amazon.com" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="aws" width="45" height="45"/></a>
+<a href="https://cloud.google.com" target="_blank"><img src="https://www.vectorlogo.zone/logos/google_cloud/google_cloud-icon.svg" alt="gcp" width="45" height="45"/></a>
+</p>
+
+🔨 DevOps & Tools
+<p align="center">
+<a href="https://git-scm.com/" target="_blank"><img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="45" height="45"/></a>
+<a href="https://www.docker.com/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg" alt="docker" width="45" height="45"/></a>
+<a href="https://www.linux.org/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg" alt="linux" width="45" height="45"/></a>
+<a href="https://jupyter.org/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/jupyter/jupyter-original-wordmark.svg" alt="jupyter" width="45" height="45"/></a>
+</p>
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"><br><br>
+
+<h2 align="center">📊 GitHub Statistics</h2>
+<p align="center">
+<table align="center">
+<tr border="none">
+<td width="50%" align="center">
+  <img align="center" src="https://github-readme-stats.vercel.app/api?username=ganji759&theme=algolia&show_icons=true&count_private=true&hide_border=true" />
+  <br></br>
+  <img align="center" src="https://github-readme-streak-stats.herokuapp.com/?user=ganji759&theme=algolia&hide_border=true" alt="GitHub Streak" />
+</td>
+<td width="50%" align="center">
+  <img align="center" src="https://github-readme-stats.vercel.app/api/top-langs/?username=ganji759&theme=algolia&layout=compact&hide_border=true&langs_count=8"/>
+</td>
+</tr>
+</table>
+</p>
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"><br><br>
+
+<h2 align="center">📝 Latest Research & Blog Posts</h2>
+
+📄 Applying Machine Learning to Mechanical Systems Design
+📄 Deep Learning for Predictive Maintenance in Manufacturing
+📄 Integrating AI with CAD for Generative Design
+📄 Thermoacoustics sytem 
+
+
+
+<h2 align="center">📊 Contribution Activity</h2>
+<div align="center">
+  <img src="https://github-readme-activity-graph.vercel.app/graph?username=ganji759&theme=react-dark&hide_border=true&area=true" width="90%">
+</div>
+<br/>
+
+3D Contribution Graph
+
+<div align="center">
+  <img src="./profile-3d-contrib/profile-season-animate.svg" alt="3D Contribution" width="80%"/>
+</div>
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+<div align="center">
+  <p>⭐️ From <a href="https://github.com/yourusername">ganji759</a> | 💡 Open to collaboration on ML/AI projects ;) </p>
+  <p>Last Updated: 29/10/2025</p>
+</div>
