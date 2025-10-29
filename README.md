@@ -10,9 +10,8 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
 
 - 🔬 &nbsp; Research focus: **Machine Learning, Deep Learning & Computer Vision**
 - 🤖 &nbsp; Interested in: **Robotics, Autonomous Systems, Predictive Maintenance, Digital Twins**
-- 🌱 &nbsp; Currently learning: **PyTorch, TensorFlow, Reinforcement Learning & ROS**
+- 🌱 &nbsp; Currently learning: **PyTorch, TensorFlow, Reinforcement Learning**
 - 🛠️ &nbsp; Combining: **CAD/CAM/FEA with AI-driven optimization**
-- 📫 &nbsp; Reach me at: **pacymugisho@gmail.com**
 
 ## 🛠️ Skills & Expertise
 <div align="center">
@@ -40,51 +39,15 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
       <td width="20"></td>
       <td><a href="https://www.mathworks.com/" target="_blank" rel="noreferrer"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/matlab/matlab-original.svg" alt="matlab" width="45" height="45"/></a></td>
       <td width="20"></td>
+      <td><a href="https://pandas.pydata.org/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/2ae2a900d2f041da66e950e4d48052658d850630/icons/pandas/pandas-original.svg" alt="pandas" width="45" height="45"/></a></td>
+      <td width="20"></td>
+      <td><a href="https://seaborn.pydata.org/" target="_blank"><img src="https://seaborn.pydata.org/_images/logo-mark-lightbg.svg" alt="seaborn" width="45" height="45"/></a></td>
+      <td width="20"></td>
       <td><a href="https://www.raspberrypi.org/" target="_blank" rel="noreferrer"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/raspberrypi/raspberrypi-original.svg" alt="raspberrypi" width="45" height="45"/></a></td>
     </tr>
     
   </table>
 </div>
-
-### 💻 Programming & ML/DL
-<p align="center">
-
-<a href="https://opencv.org/" target="_blank"><img src="https://www.vectorlogo.zone/logos/opencv/opencv-icon.svg" alt="opencv" width="45" height="45"/></a>
-<a href="https://pandas.pydata.org/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/2ae2a900d2f041da66e950e4d48052658d850630/icons/pandas/pandas-original.svg" alt="pandas" width="45" height="45"/></a>
-<a href="https://seaborn.pydata.org/" target="_blank"><img src="https://seaborn.pydata.org/_images/logo-mark-lightbg.svg" alt="seaborn" width="45" height="45"/></a>
-</p>
-
-### 🔧 Engineering & CAD Tools
-<p align="center">
-  <a href="https://www.solidworks.com/" target="_blank">
-    <img src="https://www.svgrepo.com/show/305927/solidworks.svg" alt="SolidWorks" width="45" height="45"/>
-  </a>
-  <a href="https://www.freecad.org/" target="_blank">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/FreeCAD_logo.svg" alt="FreeCAD" width="45" height="45"/>
-  </a>
-  <a href="https://www.autodesk.com/products/autocad/" target="_blank">
-    <img src="https://www.svgrepo.com/show/373441/autocad.svg" alt="AutoCAD" width="45" height="45"/>
-  </a>
-  <a href="https://www.autodesk.com/products/inventor/" target="_blank">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Autodesk_Inventor_Logo.svg" alt="Autodesk Inventor" width="45" height="45"/>
-  </a>
-  <a href="https://openfoam.org/" target="_blank">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/OpenFOAM_logo.svg" alt="OpenFOAM" width="45" height="45"/>
-  </a>
-  <a href="https://www.comsol.com/" target="_blank">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4d/COMSOL_logo.svg" alt="COMSOL Multiphysics" width="45" height="45"/>
-  </a>
-  <a href="https://www.arduino.cc/" target="_blank">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Arduino_Logo.svg" alt="Arduino" width="45" height="45"/>
-  </a>
-</p>
-
-🗄️ Databases & Cloud
-<p align="center">
-<a href="https://www.mysql.com/" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original-wordmark.svg" alt="mysql" width="45" height="45"/></a>
-<a href="https://aws.amazon.com" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="aws" width="45" height="45"/></a>
-<a href="https://cloud.google.com" target="_blank"><img src="https://www.vectorlogo.zone/logos/google_cloud/google_cloud-icon.svg" alt="gcp" width="45" height="45"/></a>
-</p>
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"><br><br>
 
@@ -104,7 +67,6 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
 </div>
 
 ---
-
 
 <h2 align="center">📊 Contribution Activity</h2>
 <div align="center">
