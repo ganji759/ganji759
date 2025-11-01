@@ -63,20 +63,21 @@ I'm a Mechanical Engineering student passionate about bridging the gap between t
 
 ---
 
-<h2 align="center">📊 Contribution Activity</h2>
+### 📊 Contribution Activity
 <div align="center">
   <img src="https://github-readme-activity-graph.vercel.app/graph?username=ganji759&theme=react-dark&hide_border=true&area=true" width="90%">
 </div>
 <br/>
 
-3D Contribution Graph
+### 3D Contribution Graph
 
 <div align="center">
   <img src="./profile-3d-contrib/profile-season-animate.svg" alt="3D Contribution" width="80%"/>
 </div>
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-## 🤝 Let's Connect!
+
+ ## 🤝 Let's Connect!
 
 <div align="center">
   
