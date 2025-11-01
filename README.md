@@ -6,12 +6,11 @@
 
 ## 👋 About Me 
 
-I'm a Mechanical Engineering student passionate about bridging the gap between traditional engineering and cutting-edge AI/ML technologies. My focus is on applying Machine Learning and Deep Learning to solve real-world engineering problems in robotics, autonomous systems, and smart manufacturing.
+I'm a Mechanical Engineering student passionate about bridging the gap between traditional engineering and cutting-edge AI/ML technologies. My focus is on applying Machine Learning and Deep Learning to solve real-world engineering problems in thermal engineering, CFD, robotics and autonomous systems.
 
-- 🔬 &nbsp; Research focus: **Machine Learning, Deep Learning & Computer Vision**
-- 🤖 &nbsp; Interested in: **Robotics, Autonomous Systems, Predictive Maintenance, Digital Twins**
-- 🌱 &nbsp; Currently learning: **PyTorch, TensorFlow, Reinforcement Learning**
-- 🛠️ &nbsp; Combining: **CAD/CAM/FEA with AI-driven optimization**
+- 🔬 &nbsp; Research focus: **Machine Learning, Deep Learning & Computer Vision and Optimisation, SciML, PINNs**
+- 🤖 &nbsp; Interested in: **Thermal Sciences, Acoustics, CAD, Robotics, Autonomous Systems, Predictive Maintenance, Digital Twins**
+- 🌱 &nbsp; Currently learning: **PyTorch, TensorFlow, Reinforcement Learning, AI for CAD**
 
 ## 🛠️ Skills & Expertise
 <div align="center">
