@@ -1,4 +1,4 @@
-# Pacifique Mugisho - AI/ML, Mechanical Engineer
+# Pacifique Mugisho - AI/ML Engineer
 
 <div align="center">
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&color=E73C7E&center=true&vCenter=true&width=435&lines=AI+Engineer;Machine+Learning+Engineer;Mechanical+Engineer" alt="Typing SVG" />
