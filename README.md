@@ -1,7 +1,7 @@
 # Pacifique Mugisho - AI/ML, Mechanical Engineer
 
 <div align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&color=E73C7E&center=true&vCenter=true&width=435&lines=Mechanical+Engineer;Machine+Learning+Engineer;AI+%26+Engineer;Student+%26+AI+Enthousiast" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&color=E73C7E&center=true&vCenter=true&width=435&lines=AI+Engineer;Machine+Learning+Engineer;Mechanical+Engineer" alt="Typing SVG" />
 </div>
 
 ## 👋 About Me 
@@ -9,8 +9,8 @@
 I'm a Mechanical Engineering student passionate about bridging the gap between traditional engineering and cutting-edge AI/ML technologies. My focus is on applying Machine Learning and Deep Learning to solve real-world engineering problems in thermal engineering, CFD, robotics and autonomous systems.
 
 - 🔬 &nbsp; Research focus: **Machine Learning, Deep Learning & Computer Vision and Optimisation, SciML, PINNs**
-- 🤖 &nbsp; Interested in: **Thermal Sciences, Acoustics, CAD, Robotics, Autonomous Systems, Predictive Maintenance, Digital Twins**
-- 🌱 &nbsp; Currently learning: **PyTorch, TensorFlow, Reinforcement Learning, AI for CAD**
+- 🤖 &nbsp; Interested in: **Physical AI, Robotics, Autonomous Systems, CAD, Predictive Maintenance, Digital Twins**
+- 🌱 &nbsp; Currently learning: **Reinforcement Learning, AI for CAD**
 
 ## 🛠️ Skills & Expertise
 <div align="center">
