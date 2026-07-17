@@ -49,19 +49,6 @@ My background is in **mechanical engineering** (BSc, Distinction). That foundati
 
 <div align="center">
 
-### 📊 GitHub Stats
-
-<img height="165" src="https://github-readme-stats.vercel.app/api?username=ganji759&show_icons=true&hide_border=true&theme=tokyonight&icon_color=6C63FF&title_color=6C63FF" alt="GitHub Stats" />
-<img height="165" src="https://github-readme-stats.vercel.app/api/top-langs/?username=ganji759&layout=compact&hide_border=true&theme=tokyonight&title_color=6C63FF" alt="Top Languages" />
-
-<img src="https://github-profile-trophy.vercel.app/?username=ganji759&theme=tokyonight&no-frame=true&no-bg=true&margin-w=4&column=7" alt="Trophies" />
-
-</div>
-
----
-
-<div align="center">
-
 ### 🤝 Let's connect
 
 <a href="https://www.linkedin.com/in/pacifique-mugisho-a487801b7">
