@@ -2,7 +2,7 @@
 
 <img src="fastfetch.svg" width="100%" alt="fastfetch-style summary: Pacifique Mugisho, AI/ML Engineer at NEOTEX.ai (Brussels, remote) and PyTorch Ambassador with the Linux Foundation, based in Kampala, Uganda. BSc Mechanical Engineering (Distinction). Works on multi-agent LLM systems, computer vision, geospatial ML and physics-informed neural networks, using Python, JavaScript, C/C++, PyTorch, ExecuTorch, LangGraph, vLLM, Transformers, FastAPI, Next.js, React, Docker, GCP, AWS, Kubernetes and MongoDB Atlas." />
 
-### Building production AI systems from an engineering-first mindset
+### Building production AI systems from an engineering mindset
 
 </div>
 
