@@ -113,7 +113,14 @@ def subject(box, K=8, mw=340, protect=0.80):
     keep = [0]*N
     for i in best: keep[i] = 255
     m = Image.new("L", (MW, MH)); m.putdata(keep)
-    m = m.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(1.2))
+    # A radius-1 closing only bridges ~1px gaps -- too weak for a bright,
+    # overexposed skin highlight (e.g. forehead glare) that the HSV+D
+    # classifiers above mistake for smooth out-of-focus background: that
+    # misclassification bites a real notch into the silhouette, connected
+    # all the way out to the border, not just a few stray pixels. A much
+    # larger closing radius bridges that notch shut while barely moving the
+    # true (already-smooth) silhouette edge elsewhere.
+    m = m.filter(ImageFilter.MaxFilter(31)).filter(ImageFilter.MinFilter(31)).filter(ImageFilter.GaussianBlur(1.2))
     out = (crop, m.resize(crop.size, Image.LANCZOS))
     with open(cache, "wb") as f: pickle.dump(out, f)
     return out
@@ -130,7 +137,7 @@ def ramps(cw, ch, fs):
     ev = lambda n: [min(a, key=lambda kv: abs(kv[1]-a[-1][1]*k/(n-1)))[0] for k in range(n)]
     return ev(16), ev(14) + ["░", "▒", "▓", "█"]
 
-def tone_lut(gray, mask, head_frac=0.62, plo=0.04, phi=0.96, gamma=0.88):
+def tone_lut(gray, mask, head_frac=0.62, plo=0.04, phi=0.95, gamma=0.9):
     """Percentile stretch driven by the HEAD region so the face keeps its range."""
     W, H = gray.size
     cut = int(H*head_frac)*W
@@ -144,12 +151,12 @@ def tone_lut(gray, mask, head_frac=0.62, plo=0.04, phi=0.96, gamma=0.88):
 
 # ---------------- geometry: sized 2x for a ~880px README column ----------------
 CW, CH, FS = 15, 31, 25
-COLS, ROWS = 120, 43
+COLS, ROWS = 158, 62
 PAD_X, PAD_Y, TITLEBAR, MARGIN = 30, 26, 46, 22
 PORTRAIT_CROP = (272, 26, 736, 600)      # head, neck and collar
 AVATAR_CROP   = (190, 20, 810, 640)      # square head-and-shoulders
-PW, P_COL, P_ROW = 58, 1, 4              # ASCII portrait: columns and origin
-IC, LABW = 62, 13                        # info block: column and label width
+PW, P_COL, P_ROW = 92, 1, 4              # ASCII portrait: columns and origin
+IC, LABW = 98, 13                        # info block: column and label width
 USER = "kwaba@fedora"                    # shell user@host, also fastfetch's title line
 CWD  = "~/Documents/ganji759"
 
@@ -196,6 +203,17 @@ fontb = ImageFont.truetype(FONT_B, FS)
 ASC   = font.getmetrics()[0]
 tfont = ImageFont.truetype(FONT_R, 22)
 
+# Recorded alongside the PIL drawing calls below so the SVG export (further down)
+# can reproduce the exact same grid without redoing any pixel analysis: each
+# entry is one visible glyph as (row, col, char, rgb_fill, bold).
+CELLS = []
+CURSORS = []  # (row, col) grid position of each blinking-cursor block
+
+def qcolor(c, step=8):
+    """Round an RGB tuple to a coarser grid so adjacent near-identical portrait
+    pixels collapse into the same SVG <tspan> run instead of each getting one."""
+    return tuple(min(255, ((int(v) + step//2)//step)*step) for v in c)
+
 img = Image.new("RGB", (CAN_W, CAN_H), (8,10,13)); d = ImageDraw.Draw(img)
 d.rounded_rectangle([MX, MY, MX+WIN_W-1, MY+WIN_H-1], radius=16, fill=BG, outline=LINE, width=1)
 d.rounded_rectangle([MX, MY, MX+WIN_W-1, MY+TITLEBAR+16], radius=16, fill=BAR)
@@ -211,6 +229,7 @@ def put(col, row, text, fill=TEXT, bold=False):
     for k, c in enumerate(text):
         if c != " ":
             d.text((OX+(col+k)*CW+CW/2, OY+row*CH+ASC), c, font=f, fill=fill, anchor="ms")
+            CELLS.append((row, col+k, c, fill, bold))
 
 def prompt(row, cmd=None, cursor=False):
     c = 1
@@ -219,35 +238,91 @@ def prompt(row, cmd=None, cursor=False):
     put(c, row, CWD, BLUE, bold=True); c += len(CWD)
     put(c, row, "$", MUTED); c += 2
     if cmd: put(c, row, cmd, TEXT); c += len(cmd) + 1
-    if cursor: d.rectangle([OX+c*CW, OY+row*CH+4, OX+c*CW+CW-3, OY+row*CH+CH-4], fill=ACCENT)
+    if cursor:
+        d.rectangle([OX+c*CW, OY+row*CH+4, OX+c*CW+CW-3, OY+row*CH+CH-4], fill=ACCENT)
+        CURSORS.append((row, c))
 
 # ---------------- ASCII portrait ----------------
 crop, mask = subject(PORTRAIT_CROP, protect=None)
 PH = round(PW*(crop.height/crop.width)*(CW/CH))
-def _cov(c):
-    im = Image.new("L", (CW, CH), 0)
-    ImageDraw.Draw(im).text((CW/2, ASC), c, font=font, fill=255, anchor="ms")
-    return sum(im.get_flattened_data())/(255.0*CW*CH)
-A = sorted({c: _cov(c) for c in ASCII_SET}.items(), key=lambda kv: kv[1]); amax = A[-1][1]
-span = lambda n, f0, f1: [min(A, key=lambda kv: abs(kv[1]-amax*(f0+(f1-f0)*k/(n-1))))[0] for k in range(n)]
-RAMP = [" ", "."] + span(10, 0.42, 1.0) + ["░","▒","▓","█"]
+
+# The full printable-ASCII density ramp: every one of the 95 printable ASCII
+# characters, in both regular and bold weight (~190 distinct glyphs total),
+# sorted by their actual measured ink coverage in this font at this cell
+# size. A smaller curated ramp reads as smoother/more photo-like, but the
+# dense full ramp -- deliberately leaning into per-glyph shape jitter as
+# texture rather than smoothing it away -- is the intended look here.
+def _full_ascii_ramp():
+    chars = [chr(c) for c in range(0x20, 0x7f)]
+    fr, fb = ImageFont.truetype(FONT_R, FS), ImageFont.truetype(FONT_B, FS)
+    ar, ab = fr.getmetrics()[0], fb.getmetrics()[0]
+    def cov(c, f, a):
+        im = Image.new("L", (CW, CH), 0)
+        ImageDraw.Draw(im).text((CW/2, a), c, font=f, fill=255, anchor="ms")
+        return sum(im.get_flattened_data())/(255.0*CW*CH)
+    glyphs = [((c, False), cov(c, fr, ar)) for c in chars] + [((c, True), cov(c, fb, ab)) for c in chars]
+    return [g for g, _ in sorted(glyphs, key=lambda kv: kv[1])]
+RAMP = _full_ascii_ramp()
 
 sub = Image.new("RGB", crop.size, (0,0,0)); sub.paste(crop, (0,0), mask)
-sub = sub.filter(ImageFilter.UnsharpMask(radius=4, percent=180, threshold=2))
+sub = sub.filter(ImageFilter.GaussianBlur(2))
 sub.paste(Image.new("RGB", crop.size, (0,0,0)), (0,0), mask.point(lambda v: 255-v))
-gray = sub.convert("L")
-lut, _, _ = tone_lut(gray, mask, head_frac=0.70, plo=0.02, phi=0.99, gamma=0.78)
-lut = [max(0, min(255, int(255*min(1.0, max(0.0, 0.5+((v/255)-0.5)*1.20))))) for v in lut]
+
+# A light FIND_EDGES blend restores crisp hair/brow/jaw boundaries that the
+# smoothing blur above softens, without reintroducing pore/blemish noise.
+gray0 = sub.convert("L")
+edges = gray0.filter(ImageFilter.FIND_EDGES)
+gray = Image.blend(gray0, edges, 0.18)
+
+# Gamma adapts to the head's own mean brightness so both dark and light skin
+# tones land in the RAMP's visible range instead of one fixed curve favoring
+# whichever tone it was tuned on.
+gv, mv = list(gray.get_flattened_data()), list(mask.get_flattened_data())
+head_px = [v for v, m in zip(gv, mv) if m >= 128]
+head_mean = sum(head_px)/max(1, len(head_px))
+gamma = 0.75 if head_mean < 90 else 1.15 if head_mean > 170 else 0.95
+
+lut, _, _ = tone_lut(gray, mask, head_frac=0.70, plo=0.02, phi=0.95, gamma=gamma)
 L = list(gray.point(lut).resize((PW, PH), Image.LANCZOS).get_flattened_data())
 C = list(ImageEnhance.Color(sub.resize((PW, PH), Image.LANCZOS)).enhance(1.25).get_flattened_data())
 M = list(mask.resize((PW, PH), Image.LANCZOS).get_flattened_data())
-for i, l in enumerate(L):
+
+# Floyd-Steinberg error diffusion: quantizing each cell to its nearest RAMP
+# level independently leaves visible banding; diffusing the rounding error
+# into not-yet-visited neighbors trades banding for a much smoother gradient
+# -- the same trick dithered image formats use. Error never crosses the
+# mask boundary, so it can't drag stray marks out into empty background.
+levels = [i*255/(len(RAMP)-1) for i in range(len(RAMP))]
+def nearest_level(v):
+    return min(range(len(levels)), key=lambda k: abs(levels[k]-v))
+err = [0.0]*(PW*PH)
+IDX = [0]*(PW*PH)
+for y in range(PH):
+    for x in range(PW):
+        i = y*PW+x
+        if M[i] < 40: continue
+        v = max(0.0, min(255.0, L[i]+err[i]))
+        k = nearest_level(v)
+        IDX[i] = k
+        e = v - levels[k]
+        if x+1 < PW and M[i+1] >= 40: err[i+1] += e*7/16
+        if y+1 < PH:
+            if x > 0 and M[i+PW-1] >= 40: err[i+PW-1] += e*3/16
+            if M[i+PW] >= 40: err[i+PW] += e*5/16
+            if x+1 < PW and M[i+PW+1] >= 40: err[i+PW+1] += e*1/16
+
+for i, k in enumerate(IDX):
     if M[i] < 40: continue
-    c = RAMP[min(len(RAMP)-1, l*len(RAMP)//256)]
+    c, glyph_bold = RAMP[k]
     if c == " ": continue
     r, g, b = C[i]; mx = max(r, g, b, 1)
     col = tuple(min(255, int(v*min(1.45, 205/mx))) for v in (r, g, b))
-    d.text((OX+(P_COL+i%PW)*CW+CW/2, OY+(P_ROW+i//PW)*CH+ASC), c, font=font, fill=col, anchor="ms")
+    lum = k/(len(RAMP)-1)
+    col = tuple(int(v*(0.6+0.4*lum)) for v in col)          # highlights stay bright, shadows keep some color
+    col = tuple(min(255, round(v/16)*16) for v in col)       # ANSI-ish quantization instead of a smooth photo gradient
+    pcol, prow = P_COL+i%PW, P_ROW+i//PW
+    d.text((OX+pcol*CW+CW/2, OY+prow*CH+ASC), c, font=(fontb if glyph_bold else font), fill=col, anchor="ms")
+    CELLS.append((prow, pcol, c, qcolor(col), glyph_bold))
 
 # ---------------- info block ----------------
 info_h = 2 + 1 + len(FIELDS) + 1 + 2
@@ -273,6 +348,108 @@ prompt(P_ROW + PH + 2, cursor=True)
 banner = os.path.join(OUTDIR, "fastfetch.png")
 img.save(banner)
 
+# ---------------- SVG export ----------------
+# Same banner, but every glyph is a real <text>/<tspan> instead of a PIL glyph
+# rasterized into a 15x31px cell. Vector text stays crisp at any render size
+# instead of baking small glyphs into a fixed-resolution raster. None of the
+# analysis changes here -- CELLS/CURSORS just record the same (row, col,
+# char, color) decisions already made above.
+
+def esc(s):
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+def hx(c):
+    return "#%02x%02x%02x" % tuple(int(v) for v in c)
+
+_GLYPH_W = {}
+def glyph_width(ch, bold):
+    key = (ch, bold)
+    if key not in _GLYPH_W:
+        _GLYPH_W[key] = d.textlength(ch, font=fontb if bold else font)
+    return _GLYPH_W[key]
+
+def svg_row(row_no, cells):
+    """One <text> per grid row; same-color runs share a <tspan> with an
+    explicit per-character x list, so glyphs stay grid-aligned regardless of
+    the viewer's actual monospace font metrics, and colors change without
+    needing a separate <text> per glyph. x is each glyph's own left edge
+    (cell center minus half its measured width) with the default
+    text-anchor="start" -- NOT text-anchor="middle" with a shared x list,
+    which different SVG renderers resolve inconsistently (some center each
+    character on its listed x, some don't), producing the left-shifted
+    characters this was fixed for. Left-edge positioning has no such
+    ambiguity: every renderer places character N's origin at xs[N], full stop."""
+    cells = sorted(cells, key=lambda t: t[0])
+    baseline = OY + row_no*CH + ASC
+    parts = [f'<text y="{baseline}" font-size="{FS}" xml:space="preserve">']
+    run_fill, run_bold, xs, chars = None, None, [], []
+    def flush():
+        if chars:
+            weight = ' font-weight="bold"' if run_bold else ""
+            parts.append(f'<tspan x="{" ".join(xs)}" fill="{hx(run_fill)}"{weight}>{esc("".join(chars))}</tspan>')
+    for cell_col, ch, fill, bold in cells:
+        if fill != run_fill or bold != run_bold:
+            flush(); xs, chars = [], []
+            run_fill, run_bold = fill, bold
+        cell_center = OX + cell_col*CW + CW/2
+        xs.append(str(round(cell_center - glyph_width(ch, bold)/2)))
+        chars.append(ch)
+    flush()
+    parts.append("</text>")
+    return "".join(parts)
+
+svg = [
+    f'<svg xmlns="http://www.w3.org/2000/svg" width="{CAN_W}" height="{CAN_H}" '
+    f'viewBox="0 0 {CAN_W} {CAN_H}" font-family="\'Source Code Pro\', monospace">',
+    f'<rect width="{CAN_W}" height="{CAN_H}" fill="{hx((8,10,13))}"/>',
+    f'<rect x="{MX}" y="{MY}" width="{WIN_W}" height="{WIN_H}" rx="16" ry="16" '
+    f'fill="{hx(BG)}" stroke="{hx(LINE)}" stroke-width="1"/>',
+    f'<rect x="{MX}" y="{MY}" width="{WIN_W}" height="{TITLEBAR+16}" rx="16" ry="16" fill="{hx(BAR)}"/>',
+    f'<rect x="{MX}" y="{MY+TITLEBAR-1}" width="{WIN_W}" height="1" fill="{hx(LINE)}"/>',
+]
+for dot_i, dot_c in enumerate((RED, YEL, GREEN)):
+    dot_cx = MX + 26 + dot_i*24
+    svg.append(f'<circle cx="{dot_cx}" cy="{MY+TITLEBAR//2}" r="7.5" fill="{hx(dot_c)}"/>')
+svg.append(
+    f'<text x="{MX+WIN_W//2}" y="{MY+TITLEBAR//2}" text-anchor="middle" dominant-baseline="central" '
+    f'font-size="22" fill="{hx(MUTED)}">{esc(f"{USER}: {CWD}")}</text>'
+)
+
+svg_rows = {}
+for cell_row, cell_col, ch, fill, bold in CELLS:
+    svg_rows.setdefault(cell_row, []).append((cell_col, ch, fill, bold))
+for row_no in sorted(svg_rows):
+    svg.append(svg_row(row_no, svg_rows[row_no]))
+
+for swatch_k, swatch_row in enumerate((ANSI_N, ANSI_B)):
+    for swatch_j, swatch_c in enumerate(swatch_row):
+        sx0 = OX + (IC+swatch_j*4)*CW
+        sy0 = OY + (r+swatch_k)*CH + 3
+        svg.append(f'<rect x="{sx0}" y="{sy0}" width="{4*CW-3}" height="{CH-6}" fill="{hx(swatch_c)}"/>')
+
+for cur_row, cur_col in CURSORS:
+    cx0 = OX + cur_col*CW
+    cy0 = OY + cur_row*CH + 4
+    svg.append(f'<rect x="{cx0}" y="{cy0}" width="{CW-2}" height="{CH-7}" fill="{hx(ACCENT)}"/>')
+
+svg.append("</svg>")
+svg_path = os.path.join(OUTDIR, "fastfetch.svg")
+with open(svg_path, "w", encoding="utf-8") as f:
+    f.write("".join(svg))
+
+# ---------------- plain-text export (no color, drops straight into a README code fence) ----------------
+maxrow = max(cr for cr, *_ in CELLS) + 1
+maxcol = max(cc for _, cc, *_ in CELLS) + 1
+grid = [[" "]*maxcol for _ in range(maxrow)]
+for cr, cc, ch, _fill, _bold in CELLS:
+    grid[cr][cc] = ch
+text_lines = ["".join(row).rstrip() for row in grid]
+while text_lines and not text_lines[-1]:
+    text_lines.pop()
+txt_path = os.path.join(OUTDIR, "fastfetch.txt")
+with open(txt_path, "w", encoding="utf-8") as f:
+    f.write("\n".join(text_lines) + "\n")
+
 # ---------------- plain avatar crop ----------------
 av = Image.open(SRC).convert("RGB").crop(AVATAR_CROP).resize((1000, 1000), Image.LANCZOS)
 avatar = os.path.join(OUTDIR, "avatar.jpg")   # JPEG: a photo as PNG runs ~900KB, near GitHub's 1MB cap
@@ -280,4 +457,6 @@ av.save(avatar, quality=92, subsampling=0, optimize=True)
 
 print(f"banner {img.size} portrait {PW}x{PH} rows {P_ROW}-{P_ROW+PH-1} info {IR}-{r+1}"
       f"  {os.path.getsize(banner)//1024}KB")
+print(f"svg {CAN_W}x{CAN_H}  {os.path.getsize(svg_path)//1024}KB  -> {svg_path}")
+print(f"txt {maxcol}x{len(text_lines)}  {os.path.getsize(txt_path)} bytes -> {txt_path}")
 print(f"avatar {av.size}  {os.path.getsize(avatar)//1024}KB")
