@@ -1,5 +1,9 @@
-avatar.jpg
-.venv
+# source photo and generator byproducts not embedded in the README
 headshot.jpg
+avatar.jpg
+avatar-ascii.png
+fastfetch.txt
 
-
+# python
+__pycache__/
+.venv
