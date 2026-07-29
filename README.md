@@ -28,6 +28,20 @@
 
 <div align="center">
 
+### 🌆 3D Contribution Graph
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="profile-3d-contrib/profile-night-rainbow.svg">
+  <source media="(prefers-color-scheme: light)" srcset="profile-3d-contrib/profile-season-animate.svg">
+  <img src="profile-3d-contrib/profile-season-animate.svg" width="100%" alt="3D contribution graph" />
+</picture>
+
+</div>
+
+---
+
+<div align="center">
+
 ### 🤝 Let's connect
 
 <a href="https://www.linkedin.com/in/pacifique-mugisho-a487801b7">

@@ -4,14 +4,17 @@ portrait beside a personal "system info" block, drawn as a terminal window.
 
     python3 make-fastfetch-banner.py --src path/to/headshot.jpg --out .
 
-Writes two files next to --out:
-  fastfetch.png  wide terminal banner, sized 2x for a ~880px README column
-  avatar.jpg     plain square headshot crop, for the profile picture itself
+Writes next to --out:
+  fastfetch.png    wide terminal banner, sized 2x for a ~880px README column
+  fastfetch.svg    same banner as vector text, crisp at any size
+  fastfetch.txt    same banner as plain text, for embedding in a README code fence
+  avatar.jpg       plain square headshot crop, for the profile picture itself
+  avatar-ascii.png the same square crop through the ASCII-art pipeline
 
 Needs Pillow and Source Code Pro. Edit FIELDS to change the info block; edit
 PORTRAIT_CROP / AVATAR_CROP if you swap in a different headshot.
 """
-import argparse, os, pickle, tempfile
+import argparse, hashlib, os, pickle, tempfile
 from collections import deque
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops, ImageEnhance
 
@@ -50,13 +53,15 @@ if not os.path.exists(SRC):
 OUTDIR = os.path.abspath(ARGS.out)
 SP  = ARGS.cache or os.path.join(tempfile.gettempdir(), "fastfetch-mask-cache")
 os.makedirs(SP, exist_ok=True)
+with open(SRC, "rb") as _f:
+    SRC_HASH = hashlib.sha256(_f.read()).hexdigest()[:16]
 from collections import deque
 
 
 
 def subject(box, K=8, mw=340, protect=0.80):
     """Return (crop, mask) with the bokeh background removed."""
-    cache = f"{SP}/cache_{'_'.join(map(str, box))}_{K}_{protect}.pkl"
+    cache = f"{SP}/cache_{SRC_HASH}_{'_'.join(map(str, box))}_{K}_{protect}.pkl"
     if os.path.exists(cache):
         with open(cache, "rb") as f: return pickle.load(f)
     crop = Image.open(SRC).convert("RGB").crop(box)
@@ -227,9 +232,13 @@ OX, OY = MX+PAD_X, MY+TITLEBAR+PAD_Y
 def put(col, row, text, fill=TEXT, bold=False):
     f = fontb if bold else font
     for k, c in enumerate(text):
-        if c != " ":
-            d.text((OX+(col+k)*CW+CW/2, OY+row*CH+ASC), c, font=f, fill=fill, anchor="ms")
-            CELLS.append((row, col+k, c, fill, bold))
+        # Always record into CELLS, even spaces: drawing a space glyph is a
+        # no-op for the PNG, but CELLS is the only data source for the SVG
+        # export -- skipping spaces there means the SVG's <tspan> text joins
+        # words together (e.g. "Pacifique Mugisho" -> "PacifiqueMugisho")
+        # even though each glyph still gets its own correct x.
+        d.text((OX+(col+k)*CW+CW/2, OY+row*CH+ASC), c, font=f, fill=fill, anchor="ms")
+        CELLS.append((row, col+k, c, fill, bold))
 
 def prompt(row, cmd=None, cursor=False):
     c = 1
@@ -242,9 +251,7 @@ def prompt(row, cmd=None, cursor=False):
         d.rectangle([OX+c*CW, OY+row*CH+4, OX+c*CW+CW-3, OY+row*CH+CH-4], fill=ACCENT)
         CURSORS.append((row, c))
 
-# ---------------- ASCII portrait ----------------
-crop, mask = subject(PORTRAIT_CROP, protect=None)
-PH = round(PW*(crop.height/crop.width)*(CW/CH))
+# ---------------- ASCII-art rendering pipeline (shared by the banner portrait and the standalone avatar) ----------------
 
 # The full printable-ASCII density ramp: every one of the 95 printable ASCII
 # characters, in both regular and bold weight (~190 distinct glyphs total),
@@ -264,62 +271,77 @@ def _full_ascii_ramp():
     return [g for g, _ in sorted(glyphs, key=lambda kv: kv[1])]
 RAMP = _full_ascii_ramp()
 
-sub = Image.new("RGB", crop.size, (0,0,0)); sub.paste(crop, (0,0), mask)
-sub = sub.filter(ImageFilter.GaussianBlur(2))
-sub.paste(Image.new("RGB", crop.size, (0,0,0)), (0,0), mask.point(lambda v: 255-v))
+def ascii_grid(crop_box, cols):
+    """Run subject()+tone_lut()+RAMP+dithering over crop_box laid out `cols`
+    characters wide. Returns (rows, IDX, C, M): IDX[i] indexes into RAMP,
+    C[i] is the enhanced RGB for that cell, M[i]<40 means no glyph (outside
+    the subject mask)."""
+    crop, mask = subject(crop_box, protect=None)
+    rows = round(cols*(crop.height/crop.width)*(CW/CH))
 
-# A light FIND_EDGES blend restores crisp hair/brow/jaw boundaries that the
-# smoothing blur above softens, without reintroducing pore/blemish noise.
-gray0 = sub.convert("L")
-edges = gray0.filter(ImageFilter.FIND_EDGES)
-gray = Image.blend(gray0, edges, 0.18)
+    sub = Image.new("RGB", crop.size, (0,0,0)); sub.paste(crop, (0,0), mask)
+    sub = sub.filter(ImageFilter.GaussianBlur(2))
+    sub.paste(Image.new("RGB", crop.size, (0,0,0)), (0,0), mask.point(lambda v: 255-v))
 
-# Gamma adapts to the head's own mean brightness so both dark and light skin
-# tones land in the RAMP's visible range instead of one fixed curve favoring
-# whichever tone it was tuned on.
-gv, mv = list(gray.get_flattened_data()), list(mask.get_flattened_data())
-head_px = [v for v, m in zip(gv, mv) if m >= 128]
-head_mean = sum(head_px)/max(1, len(head_px))
-gamma = 0.75 if head_mean < 90 else 1.15 if head_mean > 170 else 0.95
+    # A light FIND_EDGES blend restores crisp hair/brow/jaw boundaries that the
+    # smoothing blur above softens, without reintroducing pore/blemish noise.
+    gray0 = sub.convert("L")
+    edges = gray0.filter(ImageFilter.FIND_EDGES)
+    gray = Image.blend(gray0, edges, 0.18)
 
-lut, _, _ = tone_lut(gray, mask, head_frac=0.70, plo=0.02, phi=0.95, gamma=gamma)
-L = list(gray.point(lut).resize((PW, PH), Image.LANCZOS).get_flattened_data())
-C = list(ImageEnhance.Color(sub.resize((PW, PH), Image.LANCZOS)).enhance(1.25).get_flattened_data())
-M = list(mask.resize((PW, PH), Image.LANCZOS).get_flattened_data())
+    # Gamma adapts to the head's own mean brightness so both dark and light skin
+    # tones land in the RAMP's visible range instead of one fixed curve favoring
+    # whichever tone it was tuned on.
+    gv, mv = list(gray.get_flattened_data()), list(mask.get_flattened_data())
+    head_px = [v for v, m in zip(gv, mv) if m >= 128]
+    head_mean = sum(head_px)/max(1, len(head_px))
+    gamma = 0.75 if head_mean < 90 else 1.15 if head_mean > 170 else 0.95
 
-# Floyd-Steinberg error diffusion: quantizing each cell to its nearest RAMP
-# level independently leaves visible banding; diffusing the rounding error
-# into not-yet-visited neighbors trades banding for a much smoother gradient
-# -- the same trick dithered image formats use. Error never crosses the
-# mask boundary, so it can't drag stray marks out into empty background.
-levels = [i*255/(len(RAMP)-1) for i in range(len(RAMP))]
-def nearest_level(v):
-    return min(range(len(levels)), key=lambda k: abs(levels[k]-v))
-err = [0.0]*(PW*PH)
-IDX = [0]*(PW*PH)
-for y in range(PH):
-    for x in range(PW):
-        i = y*PW+x
-        if M[i] < 40: continue
-        v = max(0.0, min(255.0, L[i]+err[i]))
-        k = nearest_level(v)
-        IDX[i] = k
-        e = v - levels[k]
-        if x+1 < PW and M[i+1] >= 40: err[i+1] += e*7/16
-        if y+1 < PH:
-            if x > 0 and M[i+PW-1] >= 40: err[i+PW-1] += e*3/16
-            if M[i+PW] >= 40: err[i+PW] += e*5/16
-            if x+1 < PW and M[i+PW+1] >= 40: err[i+PW+1] += e*1/16
+    lut, _, _ = tone_lut(gray, mask, head_frac=0.70, plo=0.02, phi=0.95, gamma=gamma)
+    L = list(gray.point(lut).resize((cols, rows), Image.LANCZOS).get_flattened_data())
+    C = list(ImageEnhance.Color(sub.resize((cols, rows), Image.LANCZOS)).enhance(1.25).get_flattened_data())
+    M = list(mask.resize((cols, rows), Image.LANCZOS).get_flattened_data())
 
-for i, k in enumerate(IDX):
-    if M[i] < 40: continue
-    c, glyph_bold = RAMP[k]
-    if c == " ": continue
-    r, g, b = C[i]; mx = max(r, g, b, 1)
+    # Floyd-Steinberg error diffusion: quantizing each cell to its nearest RAMP
+    # level independently leaves visible banding; diffusing the rounding error
+    # into not-yet-visited neighbors trades banding for a much smoother gradient
+    # -- the same trick dithered image formats use. Error never crosses the
+    # mask boundary, so it can't drag stray marks out into empty background.
+    levels = [i*255/(len(RAMP)-1) for i in range(len(RAMP))]
+    def nearest_level(v):
+        return min(range(len(levels)), key=lambda k: abs(levels[k]-v))
+    err = [0.0]*(cols*rows)
+    IDX = [0]*(cols*rows)
+    for y in range(rows):
+        for x in range(cols):
+            i = y*cols+x
+            if M[i] < 40: continue
+            v = max(0.0, min(255.0, L[i]+err[i]))
+            k = nearest_level(v)
+            IDX[i] = k
+            e = v - levels[k]
+            if x+1 < cols and M[i+1] >= 40: err[i+1] += e*7/16
+            if y+1 < rows:
+                if x > 0 and M[i+cols-1] >= 40: err[i+cols-1] += e*3/16
+                if M[i+cols] >= 40: err[i+cols] += e*5/16
+                if x+1 < cols and M[i+cols+1] >= 40: err[i+cols+1] += e*1/16
+    return rows, IDX, C, M
+
+def ramp_color(k, rgb):
+    r, g, b = rgb; mx = max(r, g, b, 1)
     col = tuple(min(255, int(v*min(1.45, 205/mx))) for v in (r, g, b))
     lum = k/(len(RAMP)-1)
     col = tuple(int(v*(0.6+0.4*lum)) for v in col)          # highlights stay bright, shadows keep some color
     col = tuple(min(255, round(v/16)*16) for v in col)       # ANSI-ish quantization instead of a smooth photo gradient
+    return col
+
+# ---------------- ASCII portrait (banner) ----------------
+PH, IDX, C, M = ascii_grid(PORTRAIT_CROP, PW)
+for i, k in enumerate(IDX):
+    if M[i] < 40: continue
+    c, glyph_bold = RAMP[k]
+    if c == " ": continue
+    col = ramp_color(k, C[i])
     pcol, prow = P_COL+i%PW, P_ROW+i//PW
     d.text((OX+pcol*CW+CW/2, OY+prow*CH+ASC), c, font=(fontb if glyph_bold else font), fill=col, anchor="ms")
     CELLS.append((prow, pcol, c, qcolor(col), glyph_bold))
@@ -455,8 +477,24 @@ av = Image.open(SRC).convert("RGB").crop(AVATAR_CROP).resize((1000, 1000), Image
 avatar = os.path.join(OUTDIR, "avatar.jpg")   # JPEG: a photo as PNG runs ~900KB, near GitHub's 1MB cap
 av.save(avatar, quality=92, subsampling=0, optimize=True)
 
+# ---------------- ASCII-art avatar (same pipeline as the banner portrait, square crop, no window chrome) ----------------
+AV_COLS = 100
+av_rows, av_IDX, av_C, av_M = ascii_grid(AVATAR_CROP, AV_COLS)
+av_ascii = Image.new("RGB", (AV_COLS*CW, av_rows*CH), (8,10,13))
+av_ascii_d = ImageDraw.Draw(av_ascii)
+for i, k in enumerate(av_IDX):
+    if av_M[i] < 40: continue
+    c, glyph_bold = RAMP[k]
+    if c == " ": continue
+    col = ramp_color(k, av_C[i])
+    acol, arow = i % AV_COLS, i // AV_COLS
+    av_ascii_d.text((acol*CW+CW/2, arow*CH+ASC), c, font=(fontb if glyph_bold else font), fill=col, anchor="ms")
+avatar_ascii_path = os.path.join(OUTDIR, "avatar-ascii.png")
+av_ascii.save(avatar_ascii_path)
+
 print(f"banner {img.size} portrait {PW}x{PH} rows {P_ROW}-{P_ROW+PH-1} info {IR}-{r+1}"
       f"  {os.path.getsize(banner)//1024}KB")
 print(f"svg {CAN_W}x{CAN_H}  {os.path.getsize(svg_path)//1024}KB  -> {svg_path}")
 print(f"txt {maxcol}x{len(text_lines)}  {os.path.getsize(txt_path)} bytes -> {txt_path}")
 print(f"avatar {av.size}  {os.path.getsize(avatar)//1024}KB")
+print(f"avatar-ascii {av_ascii.size}  {os.path.getsize(avatar_ascii_path)//1024}KB -> {avatar_ascii_path}")
