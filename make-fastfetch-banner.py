@@ -39,9 +39,6 @@ def find_font(name):
                      "Debian/Ubuntu: sudo apt install fonts-source-code-pro), "
                      f"or drop the .otf next to {os.path.basename(__file__)}.")
 
-FONT_R = find_font("SourceCodePro-Regular.otf")
-FONT_B = find_font("SourceCodePro-Bold.otf")
-
 ap = argparse.ArgumentParser()
 ap.add_argument("--src", default=DEFAULT_SRC, help="source headshot")
 ap.add_argument("--out", default=".", help="output directory")
@@ -51,17 +48,21 @@ SRC = ARGS.src
 if not os.path.exists(SRC):
     raise SystemExit(f"Headshot not found: {SRC}\nPass one with --src path/to/headshot.jpg")
 OUTDIR = os.path.abspath(ARGS.out)
+os.makedirs(OUTDIR, exist_ok=True)
+FONT_R = find_font("SourceCodePro-Regular.otf")
+FONT_B = find_font("SourceCodePro-Bold.otf")
 SP  = ARGS.cache or os.path.join(tempfile.gettempdir(), "fastfetch-mask-cache")
 os.makedirs(SP, exist_ok=True)
 with open(SRC, "rb") as _f:
     SRC_HASH = hashlib.sha256(_f.read()).hexdigest()[:16]
-from collections import deque
 
-
+# Bump whenever anything inside subject() changes: the cache key cannot see the
+# code, so a stale pickle from an older revision would silently defeat the fix.
+MASK_REV = 2
 
 def subject(box, K=8, mw=340, protect=0.80):
     """Return (crop, mask) with the bokeh background removed."""
-    cache = f"{SP}/cache_{SRC_HASH}_{'_'.join(map(str, box))}_{K}_{protect}.pkl"
+    cache = f"{SP}/cache_r{MASK_REV}_{SRC_HASH}_{'_'.join(map(str, box))}_{K}_{mw}_{protect}.pkl"
     if os.path.exists(cache):
         with open(cache, "rb") as f: return pickle.load(f)
     crop = Image.open(SRC).convert("RGB").crop(box)
@@ -72,7 +73,7 @@ def subject(box, K=8, mw=340, protect=0.80):
     g = small.convert("L")
     D = list(ImageChops.difference(g, g.filter(ImageFilter.GaussianBlur(2.5)))
              .filter(ImageFilter.GaussianBlur(1.5)).get_flattened_data())
-    PY_ = int(protect*MH) if protect else MH + 1
+    PY_ = int(protect*MH) if protect is not None else MH + 1
     def prot(i): return (i//MW) >= PY_
     def skin(i): return 3 <= H[i] <= 24 and S[i] >= 45
     def strict(i):
@@ -115,6 +116,10 @@ def subject(box, K=8, mw=340, protect=0.80):
                         j = ny*MW+nx
                         if subj[j] and not seen[j]: seen[j] = 1; q.append(j)
             if best is None or len(comp) > len(best): best = comp
+    if best is None:
+        raise SystemExit(f"Found no subject in {SRC} for crop {box}: every pixel "
+                         "reads as background. Check the crop box, or use a "
+                         "headshot with a background that differs from the subject.")
     keep = [0]*N
     for i in best: keep[i] = 255
     m = Image.new("L", (MW, MH)); m.putdata(keep)
@@ -130,24 +135,16 @@ def subject(box, K=8, mw=340, protect=0.80):
     with open(cache, "wb") as f: pickle.dump(out, f)
     return out
 
-# ---- glyph ramps, measured from the actual font ----
-ASCII_SET = " .'`,^:;~-_+=<>i!lI?/\\|()[]{}rcvunxzjftLCJUYXZOQ0mwqpdbkhao*#MW&8%B@$"
-def ramps(cw, ch, fs):
-    font = ImageFont.truetype(FONT_R, fs); asc = font.getmetrics()[0]
-    def cov(c):
-        im = Image.new("L", (cw, ch), 0)
-        ImageDraw.Draw(im).text((cw/2, asc), c, font=font, fill=255, anchor="ms")
-        return sum(im.get_flattened_data())/(255.0*cw*ch)
-    a = sorted({c: cov(c) for c in ASCII_SET}.items(), key=lambda kv: kv[1])
-    ev = lambda n: [min(a, key=lambda kv: abs(kv[1]-a[-1][1]*k/(n-1)))[0] for k in range(n)]
-    return ev(16), ev(14) + ["░", "▒", "▓", "█"]
-
 def tone_lut(gray, mask, head_frac=0.62, plo=0.04, phi=0.95, gamma=0.9):
     """Percentile stretch driven by the HEAD region so the face keeps its range."""
     W, H = gray.size
     cut = int(H*head_frac)*W
     g = list(gray.get_flattened_data()); m = list(mask.get_flattened_data())
     vals = sorted(g[i] for i in range(cut) if m[i] >= 128)
+    if not vals:
+        raise SystemExit(f"The subject mask is empty in the top {head_frac:.0%} of "
+                         "the crop, so the tone stretch has no head pixels to "
+                         "measure. Move the crop box up over the head.")
     lo, hi = vals[int(len(vals)*plo)], vals[int(len(vals)*phi)]
     return [max(0, min(255, int((max(0.0, (i-lo)/max(1, hi-lo))**gamma)*255))) for i in range(256)], lo, hi
 
@@ -213,11 +210,6 @@ tfont = ImageFont.truetype(FONT_R, 22)
 # entry is one visible glyph as (row, col, char, rgb_fill, bold).
 CELLS = []
 CURSORS = []  # (row, col) grid position of each blinking-cursor block
-
-def qcolor(c, step=8):
-    """Round an RGB tuple to a coarser grid so adjacent near-identical portrait
-    pixels collapse into the same SVG <tspan> run instead of each getting one."""
-    return tuple(min(255, ((int(v) + step//2)//step)*step) for v in c)
 
 img = Image.new("RGB", (CAN_W, CAN_H), (8,10,13)); d = ImageDraw.Draw(img)
 d.rounded_rectangle([MX, MY, MX+WIN_W-1, MY+WIN_H-1], radius=16, fill=BG, outline=LINE, width=1)
@@ -332,7 +324,10 @@ def ramp_color(k, rgb):
     col = tuple(min(255, int(v*min(1.45, 205/mx))) for v in (r, g, b))
     lum = k/(len(RAMP)-1)
     col = tuple(int(v*(0.6+0.4*lum)) for v in col)          # highlights stay bright, shadows keep some color
-    col = tuple(min(255, round(v/16)*16) for v in col)       # ANSI-ish quantization instead of a smooth photo gradient
+    # ANSI-ish quantization instead of a smooth photo gradient. It also makes
+    # adjacent near-identical portrait pixels share one color, so they collapse
+    # into a single SVG <tspan> run instead of one run per glyph.
+    col = tuple(min(255, round(v/16)*16) for v in col)
     return col
 
 # ---------------- ASCII portrait (banner) ----------------
@@ -344,7 +339,7 @@ for i, k in enumerate(IDX):
     col = ramp_color(k, C[i])
     pcol, prow = P_COL+i%PW, P_ROW+i//PW
     d.text((OX+pcol*CW+CW/2, OY+prow*CH+ASC), c, font=(fontb if glyph_bold else font), fill=col, anchor="ms")
-    CELLS.append((prow, pcol, c, qcolor(col), glyph_bold))
+    CELLS.append((prow, pcol, c, col, glyph_bold))
 
 # ---------------- info block ----------------
 info_h = 2 + 1 + len(FIELDS) + 1 + 2

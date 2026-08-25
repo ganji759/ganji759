@@ -2,8 +2,8 @@
 headshot.jpg
 avatar.jpg
 avatar-ascii.png
-fastfetch.txt
 
 # python
 __pycache__/
+.mypy_cache/
 .venv
